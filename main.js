@@ -20,23 +20,16 @@ app.use(
   })
 );
 
-// export 는 세션을 내부적으로 사용하기 때문에, express-session을 활성화
-// 시키는 코드 다음에 적어야 한다!
+// passport
+// Q. 어떻게 로그인 했는지, 성공했는지를 판단하지?
+// A. passportjs.org > configure에 명세 나와있음
 var passport = require("passport"),
   LocalStrategy = require("passport-local").Strategy;
 app.post(
-  // login 폼에서 전송된 데이터를 passport가 받기로 했고,
-  // 그 때의 /auth/login_process 로 전송된 데이터는... ( 이밑의 콜백함수내용 ; localStrategy 즉, id와password를 통해 로그인하는 전략을 하겠다. )
   "/auth/login_process",
-  // 이 밑이 콜백 함수
   passport.authenticate("local", {
-    // local : passport의 로그인하는 여러가지 전략 중
-    // local 방식은 username, password로 로그인
-    // local 방식이 아닌 것은 facebook/ google 같은 것들 이용.
     successRedirect: "/",
-    // login  했으면 '/'
     failureRedirect: "/auth/login",
-    // login 못했으면, 로그인 라우터로 재진입
   })
 );
 
