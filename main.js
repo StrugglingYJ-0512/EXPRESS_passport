@@ -25,6 +25,8 @@ app.use(
 var passport = require("passport"),
   LocalStrategy = require("passport-local").Strategy;
 app.post(
+  // login 폼에서 전송된 데이터를 passport가 받기로 했고,
+  // 그 때의 /auth/login_process 로 전송된 데이터는... ( 이밑의 콜백함수내용 ; localStrategy 즉, id와password를 통해 로그인하는 전략을 하겠다. )
   "/auth/login_process",
   // 이 밑이 콜백 함수
   passport.authenticate("local", {
