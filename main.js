@@ -19,61 +19,51 @@ app.use(
     store: new FileStore(),
   })
 );
+
+// auth.js 에 있던 user 정보를 이주함.
+var authData = {
+  email: "egoing777@gmail.com",
+  password: "111111",
+  nickname: "egoing",
+};
+
 // passport
 var passport = require("passport"),
   LocalStrategy = require("passport-local").Strategy;
 
 // **아래의 콜백함수에서 < 로그인 성공 여부를 판단 >을 어떻게 하는지에 관한 로직이다._ 아직은 먼지 모르겠음.
+/* if문 사이사이에 console을 찍는 이유; 성공 or 실패했을 때 어디까지 진행 되었는지를 확인하기 위해서
+ 성공했다면, 콘솔 1,2가 찍히는 것이고, 실패했다면 어느 지점에서 실패한 지 찍힐 것이다.
+*/
 passport.use(
   new LocalStrategy(
-    /* auth.js에서 login form 을 맞추기 위한 2번째 방법으로,
-     name에 파라미터 값을 넘겨주는 방식!
-     */
     {
       usernameField: "email",
       passwordField: "pwd",
     },
     function (username, password, done) {
-      /* *위의 form 형식의 name 변경 로직까지 넣은 후 추가한 것이다!
-        콘솔 찍는 이유 : 
-        1) 현재의 콜백이 잘 호출 되는지 확인 
-        2) passport가 우리한테 username, password를 콜백 내로 주입시켜 주는지 확인.
-       */
       console.log("LocalStrategy", username, password);
-      /* * 출력 결과 : LocalStrategy egoing777@gmail.com 111111
-         해설 : 1) LocalStrategy : string값으로 콘솔에 찍었기 때문 ==> 콜백 함수가 잘 실행됨
-                2) username, password : 이 콜백 함수가 호출 될 때, 
-                passport가 인자로 format 에 전송한 username, password 를 잘 전달 해줬다는 것!
-         */
-
-      User.findOne({ username: username }, function (err, user) {
-        // User.findOne : MongoDB 문법
-        /* username 으로 : 사용자 중 username 찾는다.
-         User.findOne({ username: username} 가 잘 실행되면, user 데이터를 가져온다.
-         이 user값은  콜백함수의 user 파라미터 값에 넘겨준다. 
-        */
-        if (err) {
-          return done(err);
-          // 만약 err가 발생하면, 이 전체 콜백의 3번째 파라미터인 done 함수를 호출한다.
-          // done 함수안에  err를 첫번째 인자로 넘겨준다.
-        }
-        if (!user) {
-          return done(null, false, { message: "Incorrect username." });
-          // 만약 그 user가 없다면,  done 함수로 호출 할 떄, 두번째 인자로 false를 줘라.
-          // 3번째 인자로 왜 실패했는지를 알려줘라. 나머지는 우리가 알아서 하겠다! 라는 뜻!
-        }
-        if (!user.validPassword(password)) {
+      if (username === authData.email) {
+        console.log(1);
+        if (password === authData.password) {
+          console.log(2);
+          return done(null, authData);
+          // username & password 까지 모두 맞다면, user정보를 담아서 done 함수를 실행시킨다
+          /* *cf_ done 함수를 보면 2번째 인자에 false값이 안디ㅏ.
+             2번째 인자에 false가 아닌 값을 주면,  JS에서는  true로 친다!!
+             */
+          /*  이제 성공한거고, 성공한 사용자의 정보가 무엇 이라고 passport 에게 알려줘야 한다.
+              알려줄 사용자의 정보는 'authData' 정보이므로, 2번째 인자에 넣는다 
+          */
+        } else {
+          console.log(3);
           return done(null, false, { message: "Incorrect password." });
-          // 여기까지 코드가 왔다면 사용자는 존재.
-          // but, 사용자의 password를 체크하니 틀렸다.
-          // 마찬가지로 done 함수에 false를 주고, 왜 틀린지를 알려줘라.
         }
-        return done(null, user);
-        // 여기까지 왔다면!! 사용자가 존재한다는 뜻!
-        // 사용자의 정보를 담아서( user ) done 함수의 2번쨰 인자로 줘라.
-        // 나머지는 우리가 알아서 하겠다!!
-      });
-      // ** 즉, 이 done 함수를 어떻게 호출하느냐에 따라서 로그인에 성공 실패를 passport에 알려 줄 수 있다!
+      } else {
+        console.log(4);
+        return done(null, false, { message: "Incorrect username." });
+        // *cf_ return 하면 함수는 끝난다!
+      }
     }
   )
 );
