@@ -50,9 +50,11 @@ router.get("/login", function (request, response) {
 </form>
 */
 
-/*방법 2_ 다른 점은 input의 namedl 다르다. 
- 이를 parameter 값으로, 값을 넘겨줘야 하고, 이는 main.js에서 처리할 것이다.
-  이 또한, passportjs.org 내용 안에 parameter 라는 주제로 존재한다!
+/*방법 2_ 다른 점은 input의 name 다르다. 
+  이 이름을 바꿀 수 있는 방법이 아래의 코드 이다. 
+ 이를 parameter 값으로 넘겨주며,
+  이는 main.js에서 처리할 것이다.
+  ( 이 또한, passportjs.org 내용 안에 parameter 라는 주제로 존재한다! )
  */
 /*
 passport.use(new LocalStrategy({
