@@ -24,6 +24,19 @@ app.use(
 // 시키는 코드 다음에 적어야 한다!
 var passport = require("passport"),
   LocalStrategy = require("passport-local").Strategy;
+app.post(
+  "/auth/login_process",
+  // 이 밑이 콜백 함수
+  passport.authenticate("local", {
+    // local : passport의 로그인하는 여러가지 전략 중
+    // local 방식은 username, password로 로그인
+    // local 방식이 아닌 것은 facebook/ google 같은 것들 이용.
+    successRedirect: "/",
+    // login  했으면 '/'
+    failureRedirect: "/auth/login",
+    // login 못했으면, 로그인 라우터로 재진입
+  })
+);
 
 app.get("*", function (request, response, next) {
   fs.readdir("./data", function (error, filelist) {
