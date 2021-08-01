@@ -19,12 +19,36 @@ app.use(
     store: new FileStore(),
   })
 );
-
 // passport
-// Q. 어떻게 로그인 했는지, 성공했는지를 판단하지?
-// A. passportjs.org > configure에 명세 나와있음
 var passport = require("passport"),
   LocalStrategy = require("passport-local").Strategy;
+
+// *아래의 콜백함수에서 로그인 성공 여부를 판단을 어떻게 하는지에 관한 로직이다._ 아직은 먼지 모르겠음.
+passport.use(
+  new LocalStrategy(function (username, password, done) {
+    console.log("LocalStrategy", username, password);
+    /*
+    User.findOne({ username: username }, function (err, user) {
+      if (err) {
+        return done(err);
+      }
+      if (!user) {
+        return done(null, false, { message: "Incorrect username." });
+      }
+      if (!user.validPassword(password)) {
+        return done(null, false, { message: "Incorrect password." });
+      }
+      return done(null, user);
+    });
+    */
+  })
+);
+
+/* Q. 밑의 콜백함수(passport.authenticate) 내용은, 성공하면 "/",
+ 실패하면,"/auth/login" 경로로 간다. 
+그렇다면,  어떻게 로그인 성공했는지를 판단하지?
+ A. passportjs.org > configure에 명세 나와있음
+ */
 app.post(
   "/auth/login_process",
   passport.authenticate("local", {
