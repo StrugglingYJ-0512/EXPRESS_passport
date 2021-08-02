@@ -39,6 +39,7 @@ app.use(passport.session());
 
 
 // 로그인을 하면 딱 한 번 실행된다!
+// 로그인 성공시, session store에 저장하는 방법이다!!
 passport.serializeUser(function (user, done) {
   console.log("serializeUser", user);
   done(null, user.email);
@@ -49,6 +50,8 @@ passport.serializeUser(function (user, done) {
   id 값으로 user의 데이터를 조회한다. 
 */
 // 로그인 이후, 페이지가 로드 될 때마다 작동한다!
+// 페이지에 방문할 떄마다 session  Store의 식별자를 가져와서.
+// 식별자를 기준으로 해서 사용자의 실제 Data를 가져온다. 
 passport.deserializeUser(function (id, done) {
   console.log("deserializeUser", id);
   done(null, authData); // 우리는 DB가 아닌 위의 authData가 사용자 정보이다.
