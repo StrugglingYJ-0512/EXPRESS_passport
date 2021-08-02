@@ -31,16 +31,15 @@ var authData = {
 var passport = require("passport"),
   LocalStrategy = require("passport-local").Strategy;
 
-/* app.use : express에다가 미들웨어 설치
-    Q. 그 미들웨어는 뭔가? ==> A. passport
-    passport가 우리의 express에 개입한다. */
+// passort를 사용하겠다!! 라는 의미
+// app.use를 사용한다는 것은 express에 passport를 개입시킨다!라는 뜻
 app.use(passport.initialize());
-/*세션을 내부적으로 사용 할 것이다.
- 세션 인증수업에서 직접 세션으로 login 구현 했으나,
- 세션 미들웨어를 도입해서 그 위에서 passport가 구동된다. */
+
+// passport는 내부적으로 세션을 쓰겠다!! 라는 의미!!
 app.use(passport.session());
 
-//passport에 serializeUser와 deserializeUser를 설치했다.
+// 세션을 쓰는 방법이 밑의 serializeUser과 deserializeUser 미들웨어.
+// 이 밑의 두 개를 쓰는 방법이 이 시간의 주인공~~!
 passport.serializeUser(function (user, done) {
   // done(null, user.id);
 });
@@ -51,7 +50,7 @@ passport.deserializeUser(function (id, done) {
   // });
 });
 
-//로그인 성공 여부 판단 로직
+//사용자가 로그인을 했을 시, 로그인 성공 여부 판단 로직
 passport.use(
   new LocalStrategy(
     {
@@ -83,6 +82,7 @@ passport.use(
   )
 );
 
+// 사용자가 로그인을 전송 했을 때, passport가 로그인 데이터를 처리하기 위한 코드
 app.post(
   "/auth/login_process",
   passport.authenticate("local", {
