@@ -37,13 +37,11 @@ app.use(passport.initialize());
 // passport는 내부적으로 세션을 쓰겠다!! 라는 의미!!
 app.use(passport.session());
 
-
 // 로그인을 하면 딱 한 번 실행된다!
 // 로그인 성공시, session store에 저장하는 방법이다!!
 passport.serializeUser(function (user, done) {
   console.log("serializeUser", user);
   done(null, user.email);
-
 });
 
 /* serializeUser에서 session Store에 저장한 sessionID 값을 1번쨰 인자로 받아와서,
@@ -51,11 +49,11 @@ passport.serializeUser(function (user, done) {
 */
 // 로그인 이후, 페이지가 로드 될 때마다 작동한다!
 // 페이지에 방문할 떄마다 session  Store의 식별자를 가져와서.
-// 식별자를 기준으로 해서 사용자의 실제 Data를 가져온다. 
+// 식별자를 기준으로 해서 사용자의 실제 Data를 가져온다.
 passport.deserializeUser(function (id, done) {
   console.log("deserializeUser", id);
   done(null, authData); // 우리는 DB가 아닌 위의 authData가 사용자 정보이다.
-
+});
 
 //사용자가 로그인을 했을 시, 로그인 성공 여부 판단 로직
 passport.use(

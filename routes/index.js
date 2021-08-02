@@ -5,9 +5,9 @@ var auth = require("../lib/auth");
 
 router.get("/", function (request, response) {
   console.log("/", request.user);
-  // 로그인이 완료 되면 최상위 루트로 들어온다.
-  // request 안에 user 객체가 들어 있는지를 체크한다!
-  //
+  // passport는 request.user라고, user객체를 준다.
+  // 이, user 객체는 deserializeUser 의 return 값으로, 주는 authData를 받는다!!
+
   var title = "Welcome";
   var description = "Hello, Node.js";
   var list = template.list(request.list);
