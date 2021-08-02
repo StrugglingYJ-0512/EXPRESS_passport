@@ -32,7 +32,7 @@ var passport = require("passport"),
   LocalStrategy = require("passport-local").Strategy;
 
 // passort를 사용하겠다!! 라는 의미
-// app.use를 사용한다는 것은 express에 passport를 개입시킨다!라는 뜻
+// & app.use를 사용한다는 것은 express에 passport를 개입시킨다!라는 뜻
 app.use(passport.initialize());
 
 // passport는 내부적으로 세션을 쓰겠다!! 라는 의미!!
@@ -40,7 +40,7 @@ app.use(passport.session());
 
 /*  로그인이 성공 했을 때, 
 serializeUser라는 메서드의 인자로 전달된 콜백함수가 
- 호출되도록 약속되어 있다!!*/
+ 호출되도록 약속되어 있고, 콜백의 user 는 로그인 성공시 주는 authDataf가 들어있다*/
 passport.serializeUser(function (user, done) {
   // 로그인에 성공 해서, 이 메서드까지 들어오는지 확인하기위해 console찍음
 
@@ -51,17 +51,21 @@ passport.serializeUser(function (user, done) {
        password: '111111',
        nickname: 'egoing'
      }*/
+
   // done(null,user.id)
   done(null, user.email);
-  /* 첫 번째 인자로 null, 2번째의 인자로 사용자의 식별자!!를 넣어줘야 한다!(rule)
+  /*
+ 첫 번째 인자로 null, 2번째의 인자로 사용자의 식별자!!를 넣어줘야 한다!(rule)
    user의 식별자를 주게 되어 있다. passportjs의 명세의 2번째 인자는 user.id로 식별자가 나와있었다.
    우리는.. 그 식별자로 email로 하기로 했다. 따라서.. user.id => user.email 로 변경함!
    이는.. 로그인을 한다 => 쿠키가 생성되며, 내용은 sessionid가 생성함
    => sessionid값은 우리의 폴더 'session'에 파일로 저장된다.
    => session의 내용 안에는 "passport":{"user":"egoing777@gmail.com"}"가 나오며, 
-   이는..원래 user.id로 식별자가 나온다. 우리는 authData에 식별자로 eamil을 넣었ㄷ으므로
+   이는..원래 user.id로 식별자가 나온다. 우리는 authData에 식별자로 eamil을 넣었으므로
    식별자가 나온다. 
    */
+  //그 식별자 값은 어디로 간다? session의 passport: {"user":"egoing777@gmail.com"} 값으로 간다!
+  // 로그인이 성공하면 serializeUser는 딱 한 번만 호출한다~!
 });
 
 /* 로그인이 되고, 페이지를 방문 할 떄마다 (로그인 한 상태로 f5누르면 리로드 되는 것도 방문의 한종류) deserializeUser 콜백이 호출된다.
@@ -75,7 +79,7 @@ passport.serializeUser(function (user, done) {
     */
 // 사용자의 데이터가 저장되어있는 곳에서 사용자의 실제 데이터를 조회해서 가져온다.
 // 로그인 이후, 식별자의 값을 id로 주입 받는다.
-// id 값으로 DB에서 조회새서 사용자를 가져온다.
+// User.findById ~~ 인 코드 : id 값으로 DB에서 조회새서 사용자를 가져온다.
 passport.deserializeUser(function (id, done) {
   // 호출 될 떄 마다 사용자의 데이터가 저장 된 곳에서
   // 사용자의 실제 데이터를 조회 해 가져온다.
@@ -110,7 +114,7 @@ passport.use(
            1번째 인자로 주입해 주기로 약속되어 있다!
            그 결과로,  passport.serializeUser의 콜백함수에 콘솔을 찎어보면... 
              console.log("serializeUser", user);
-            ==>  출력 결과 :
+              출력 결과 :
             /*   serializeUser {
               email: 'egoing777@gmail.com',
               password: '111111',
