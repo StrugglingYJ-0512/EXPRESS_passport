@@ -31,10 +31,27 @@ var authData = {
 var passport = require("passport"),
   LocalStrategy = require("passport-local").Strategy;
 
-// **아래의 콜백함수에서 < 로그인 성공 여부를 판단 >을 어떻게 하는지에 관한 로직이다._ 아직은 먼지 모르겠음.
-/* if문 사이사이에 console을 찍는 이유; 성공 or 실패했을 때 어디까지 진행 되었는지를 확인하기 위해서
- 성공했다면, 콘솔 1,2가 찍히는 것이고, 실패했다면 어느 지점에서 실패한 지 찍힐 것이다.
-*/
+/* app.use : express에다가 미들웨어 설치
+    Q. 그 미들웨어는 뭔가? ==> A. passport
+    passport가 우리의 express에 개입한다. */
+app.use(passport.initialize());
+/*세션을 내부적으로 사용 할 것이다.
+ 세션 인증수업에서 직접 세션으로 login 구현 했으나,
+ 세션 미들웨어를 도입해서 그 위에서 passport가 구동된다. */
+app.use(passport.session());
+
+//passport에 serializeUser와 deserializeUser를 설치했다.
+passport.serializeUser(function (user, done) {
+  // done(null, user.id);
+});
+
+passport.deserializeUser(function (id, done) {
+  // User.findById(id, function (err, user) {
+  //   done(err, user);
+  // });
+});
+
+//로그인 성공 여부 판단 로직
 passport.use(
   new LocalStrategy(
     {
@@ -48,13 +65,11 @@ passport.use(
         if (password === authData.password) {
           console.log(2);
           return done(null, authData);
-          // username & password 까지 모두 맞다면, user정보를 담아서 done 함수를 실행시킨다
-          /* *cf_ done 함수를 보면 2번째 인자에 false값이 안디ㅏ.
-             2번째 인자에 false가 아닌 값을 주면,  JS에서는  true로 친다!!
-             */
-          /*  이제 성공한거고, 성공한 사용자의 정보가 무엇 이라고 passport 에게 알려줘야 한다.
-              알려줄 사용자의 정보는 'authData' 정보이므로, 2번째 인자에 넣는다 
-          */
+          /*로그인에 성공 =>
+            passport가 내부적으로 성공했다는 것을 알아낼 수 있는 방법을 제공한다.
+           Q. 성공하면, 어디로 가는가?
+           A. 밑의 app.post 에 인증시 성공/실패시에 들어가는 경로가 있다!
+           */
         } else {
           console.log(3);
           return done(null, false, { message: "Incorrect password." });
@@ -68,15 +83,12 @@ passport.use(
   )
 );
 
-/* Q. 밑의 콜백함수(passport.authenticate) 내용은, 성공하면 "/",
- 실패하면,"/auth/login" 경로로 간다. 
-그렇다면,  어떻게 로그인 성공했는지를 판단하지?
- A. passportjs.org > configure에 명세 나와있음
- */
 app.post(
   "/auth/login_process",
   passport.authenticate("local", {
     successRedirect: "/",
+    // 로그인이 성공하면 home으로 간다 (최상위 루트)
+    // Error: Failed to serialize user into session
     failureRedirect: "/auth/login",
   })
 );
