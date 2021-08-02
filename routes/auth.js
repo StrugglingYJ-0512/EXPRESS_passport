@@ -5,8 +5,6 @@ var fs = require("fs");
 var sanitizeHtml = require("sanitize-html");
 var template = require("../lib/template.js");
 
-
-
 router.get("/login", function (request, response) {
   var title = "WEB - login";
   var list = template.list(request.list);
@@ -45,8 +43,19 @@ router.post("/login_process", function (request, response) {
 */
 
 router.get("/logout", function (request, response) {
-  request.session.destroy(function (err) {
+  //passport 의 logout명세가 있음!
+  request.logout();
+  // //  로그아웃을 하고,
+  // request.session.destroy(function (err) {
+  //   // 세션을 다 지운 다음에
+  // response.redirect("/");
+  //   // 리다이렉트를 한다
+  // });
+  request.session.save(function () {
+    // save : 현재의 세션상태를 session store에 저장하고,
+    // 저장이 끝나면,
     response.redirect("/");
+    // 리다이렉트 한다.
   });
 });
 
